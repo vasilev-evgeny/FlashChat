@@ -1,12 +1,12 @@
 //
-//  RegisterViewController.swift
+//  LoginViewController.swift
 //  Flash Chat
 //
 //  Created by Евгений Васильев on 07.08.2025.
 //
 import UIKit
 
-class RegisterViewController : UIViewController {
+class LoginViewController : UIViewController {
     enum Constants {
         
     }
@@ -41,10 +41,10 @@ class RegisterViewController : UIViewController {
         return field
     }()
     
-    let registerButton : UIButton = {
+    let loginButton : UIButton = {
         let button = UIButton()
-        button.setTitle("Register", for: .normal)
-        button.setTitleColor(.brandBlue, for: .normal)
+        button.setTitle("Login", for: .normal)
+        button.setTitleColor(.white, for: .normal)
         return button
     }()
     
@@ -57,10 +57,10 @@ class RegisterViewController : UIViewController {
     }
     
     private func setupViews() {
-        view.backgroundColor = .brandLightBlue
+        view.backgroundColor = .brandBlue
         view.addSubview(emailTextField)
         view.addSubview(passwordTextField)
-        view.addSubview(registerButton)
+        view.addSubview(loginButton)
     }
     
     //MARK: - setConstraints
@@ -84,13 +84,14 @@ class RegisterViewController : UIViewController {
             passwordTextField.heightAnchor.constraint(equalToConstant: 50)
         ])
         
-        registerButton.translatesAutoresizingMaskIntoConstraints = false
+        loginButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            registerButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 40),
-            registerButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            registerButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 72),
-            registerButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -72),
-            registerButton.heightAnchor.constraint(equalToConstant: 50)
+            loginButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 40),
+            loginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loginButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 72),
+            loginButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -72),
+            loginButton.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
 }
+
