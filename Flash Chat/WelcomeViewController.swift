@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CLTypingLabel
 
 class WelcomeViewController: UIViewController {
 
@@ -15,9 +16,9 @@ class WelcomeViewController: UIViewController {
     
     //MARK: - Create UI
     
-    let appLabel : UILabel = {
-        let label = UILabel()
-        label.text = ""
+    let appLabel : CLTypingLabel = {
+        let label = CLTypingLabel()
+        label.text = "⚡️FlashChat"
         label.textColor = .brandBlue
         label.font = UIFont.systemFont(ofSize: 40, weight: .bold)
         return label
@@ -45,7 +46,7 @@ class WelcomeViewController: UIViewController {
         super.viewDidLoad()
         setupViews()
         setConstraints()
-        animateLabel()
+        //animateLabel()
     }
     
     private func setupViews() {
