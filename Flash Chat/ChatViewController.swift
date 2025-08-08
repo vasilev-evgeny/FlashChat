@@ -7,6 +7,7 @@
 import UIKit
 import Firebase
 import FirebaseAuth
+import IQKeyboardManagerSwift
 
 class ChatViewController : UIViewController {
     
@@ -50,8 +51,8 @@ class ChatViewController : UIViewController {
     
     func setDelegates() {
         messageTableView.delegate = self
-          messageTableView.dataSource = self
-          messageTableView.register(MessageCell.self, forCellReuseIdentifier: "MessageCell")
+        messageTableView.dataSource = self
+        messageTableView.register(MessageCell.self, forCellReuseIdentifier: "MessageCell")
     }
     
     //MARK: - Action Func
@@ -66,21 +67,21 @@ class ChatViewController : UIViewController {
         rightButton.tintColor = .white
         navigationItem.rightBarButtonItem = rightButton
         navigationItem.hidesBackButton = true
+        navigationItem.title = "⚡️FlashChat"
     }
     
     @objc func rightBarButtonTapped() {
         let firebaseAuth = Auth.auth()
         do {
-          try firebaseAuth.signOut()
-          navigationController?.popToRootViewController(animated: true)
+            try firebaseAuth.signOut()
+            navigationController?.popToRootViewController(animated: true)
         } catch let signOutError as NSError {
-          print("Error signing out: %@", signOutError)
+            print("Error signing out: %@", signOutError)
         }
     }
     
     @objc func sendButtonTapped() {
         if let messageBody = messageTextField.text, let messageSender = Auth.auth().currentUser?.email {
-            messageTextField.text = ""
             db.collection(K.FStore.collectionName).addDocument(data: [K.FStore.senderField : messageSender,
                                                                       K.FStore.bodyField : messageBody,
                                                                       K.FStore.dateField : Date().timeIntervalSince1970
@@ -90,6 +91,9 @@ class ChatViewController : UIViewController {
                     print(e.localizedDescription)
                 } else {
                     print("saved data sucsess")
+                    DispatchQueue.main.async {
+                        self.messageTextField.text = ""
+                    }
                 }
             }
         }
@@ -99,24 +103,26 @@ class ChatViewController : UIViewController {
         db.collection(K.FStore.collectionName)
             .order(by: K.FStore.dateField)
             .addSnapshotListener { querySnapshot, error in
-            self.message = []
-            if let e = error {
-                print("Error retrieving data from Firestore. \(e)")
-            } else {
-                if let snapshotDocuments = querySnapshot?.documents {
-                    for doc in snapshotDocuments {
-                        let data = doc.data()
-                        if let messangeSender = data[K.FStore.senderField] as? String, let messageBody = data[K.FStore.bodyField] as? String {
-                            let newMessage = Message(sender: messangeSender, body: messageBody)
-                            self.message.append(newMessage)
-                            DispatchQueue.main.async {
-                                self.messageTableView.reloadData()
+                self.message = []
+                if let e = error {
+                    print("Error retrieving data from Firestore. \(e)")
+                } else {
+                    if let snapshotDocuments = querySnapshot?.documents {
+                        for doc in snapshotDocuments {
+                            let data = doc.data()
+                            if let messangeSender = data[K.FStore.senderField] as? String, let messageBody = data[K.FStore.bodyField] as? String {
+                                let newMessage = Message(sender: messangeSender, body: messageBody)
+                                self.message.append(newMessage)
+                                DispatchQueue.main.async {
+                                    self.messageTableView.reloadData()
+                                    let indexPath = IndexPath(row: self.message.count - 1, section: 0)
+                                    self.messageTableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                                }
                             }
                         }
                     }
                 }
             }
-        }
     }
     
     //MARK: - Lifecycle
@@ -175,8 +181,12 @@ extension ChatViewController : UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let message = message[indexPath.item]
         let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as! MessageCell
-        cell.messageLabel.text = message[indexPath.item].body
+        
+        let isCurrentUser = message.sender == Auth.auth().currentUser?.email
+        cell.configure(with: message, isCurrentUser: isCurrentUser)
+        
         return cell
     }
 }
