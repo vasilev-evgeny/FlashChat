@@ -5,6 +5,8 @@
 //  Created by Евгений Васильев on 07.08.2025.
 //
 import UIKit
+import Firebase
+import FirebaseAuth
 
 class RegisterViewController : UIViewController {
     enum Constants {
@@ -38,6 +40,7 @@ class RegisterViewController : UIViewController {
         field.layer.shadowColor = UIColor.black.cgColor
         field.layer.shadowOpacity = 0.5
         field.layer.shadowRadius = 15
+        field.isSecureTextEntry = true
         return field
     }()
     
@@ -45,8 +48,30 @@ class RegisterViewController : UIViewController {
         let button = UIButton()
         button.setTitle("Register", for: .normal)
         button.setTitleColor(.brandBlue, for: .normal)
+        button.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
         return button
     }()
+    
+    //MARK: - Action Func
+    
+    @objc func registerButtonTapped() {
+        if let email = emailTextField.text, let password = passwordTextField.text {
+            Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
+                if let e = error {
+                    let alert = UIAlertController(
+                        title: "Ошибка регистрации",
+                        message: e.localizedDescription,
+                        preferredStyle: .alert
+                    )
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    self.present(alert, animated: true)
+                } else {
+                    let vc = ChatViewController()
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
+            }
+        }
+    }
     
     //MARK: - Lifecycle
     

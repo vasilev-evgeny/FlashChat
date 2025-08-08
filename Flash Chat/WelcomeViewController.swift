@@ -29,6 +29,7 @@ class WelcomeViewController: UIViewController {
         button.setTitle("Register", for: .normal)
         button.setTitleColor(.brandBlue, for: .normal)
         button.backgroundColor = .brandLightBlue
+        button.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -46,7 +47,6 @@ class WelcomeViewController: UIViewController {
         super.viewDidLoad()
         setupViews()
         setConstraints()
-        //animateLabel()
     }
     
     private func setupViews() {
@@ -58,16 +58,10 @@ class WelcomeViewController: UIViewController {
     
     //MARK: - Action Func
     
-    func animateLabel() {
-        appLabel.text = ""
-        let titleText = "⚡️FlashChat"
-        var charIndex = 0.0
-        for letter in titleText {
-            Timer.scheduledTimer(withTimeInterval: 0.1 * charIndex, repeats: false) { timer in
-                self.appLabel.text?.append(letter)
-            }
-            charIndex += 1
-        }
+    @objc func registerButtonTapped() {
+        let vc = RegisterViewController()
+        navigationController?.navigationBar.isHidden = false
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     //MARK: - setConstraints
