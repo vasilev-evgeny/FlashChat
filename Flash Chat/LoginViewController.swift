@@ -5,6 +5,8 @@
 //  Created by Евгений Васильев on 07.08.2025.
 //
 import UIKit
+import Firebase
+import FirebaseAuth
 
 class LoginViewController : UIViewController {
     enum Constants {
@@ -16,6 +18,7 @@ class LoginViewController : UIViewController {
     let emailTextField : UITextField = {
         let field = UITextField()
         field.placeholder = "Email"
+        field.text = "11@mail.ru"
         field.textAlignment = .center
         field.textColor = .systemGray
         field.layer.cornerRadius = 25
@@ -30,6 +33,7 @@ class LoginViewController : UIViewController {
     let passwordTextField : UITextField = {
         let field = UITextField()
         field.placeholder = "Password"
+        field.text = "123456"
         field.textAlignment = .center
         field.textColor = .systemGray
         field.layer.cornerRadius = 25
@@ -38,6 +42,7 @@ class LoginViewController : UIViewController {
         field.layer.shadowColor = UIColor.black.cgColor
         field.layer.shadowOpacity = 0.5
         field.layer.shadowRadius = 15
+        field.isSecureTextEntry = true
         return field
     }()
     
@@ -45,8 +50,31 @@ class LoginViewController : UIViewController {
         let button = UIButton()
         button.setTitle("Login", for: .normal)
         button.setTitleColor(.white, for: .normal)
+        button.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
         return button
     }()
+    
+    //MARK: - Action Func
+    
+    @objc func loginButtonTapped() {
+        if let email = emailTextField.text, let password = passwordTextField.text {
+            Auth.auth().signIn(withEmail: email, password: password) { [weak self] authResult, error in
+                guard let strongSelf = self else { return }
+                if let e = error {
+                    let alert = UIAlertController(
+                        title: "Ошибка логирования",
+                        message: e.localizedDescription,
+                        preferredStyle: .alert
+                    )
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    self!.present(alert, animated: true)
+                } else {
+                    let vc = ChatViewController()
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                }
+            }
+        }
+    }
     
     //MARK: - Lifecycle
     

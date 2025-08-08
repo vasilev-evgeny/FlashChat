@@ -38,6 +38,7 @@ class WelcomeViewController: UIViewController {
         button.setTitle("Login", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .brandBlue
+        button.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -60,6 +61,12 @@ class WelcomeViewController: UIViewController {
     
     @objc func registerButtonTapped() {
         let vc = RegisterViewController()
+        navigationController?.navigationBar.isHidden = false
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    @objc func loginButtonTapped() {
+        let vc = LoginViewController()
         navigationController?.navigationBar.isHidden = false
         navigationController?.pushViewController(vc, animated: true)
     }

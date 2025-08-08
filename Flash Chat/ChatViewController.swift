@@ -5,12 +5,22 @@
 //  Created by Евгений Васильев on 07.08.2025.
 //
 import UIKit
+import Firebase
+import FirebaseAuth
 
 class ChatViewController : UIViewController {
     
     enum Constants {
         
     }
+    
+    var message : [Message] = [
+        Message(sender: "1@mail.ru", body: "Heloo ahsdh"),
+        Message(sender: "ggwtasd@mail.ru", body: "Want some?"),
+        Message(sender: "dfas@mail.ru", body: "No way u ahsdhNo way u ahsdhNo way u ahsdhNo way u ahsdhNo way u ahsdhNo way u ahsdhNo way u ahsdhNo way u ahsdhNo way u ahsdhNo way u ahsdhNo way u ahsdhNo way u ahsdh"),
+    ]
+    
+    let db = Firestore.firestore()
     
     //MARK: - Create UI
     
@@ -27,6 +37,7 @@ class ChatViewController : UIViewController {
         let button = UIButton()
         button.setImage(UIImage(systemName: "paperplane.fill"), for: .normal)
         button.tintColor = .white
+        button.addTarget(self, action: #selector(sendButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -34,6 +45,8 @@ class ChatViewController : UIViewController {
         let view = UITableView()
         view.rowHeight = 50
         view.backgroundColor = .white
+        view.separatorStyle = .none
+        view.rowHeight = UITableView.automaticDimension
         return view
     }()
     
@@ -41,8 +54,38 @@ class ChatViewController : UIViewController {
     
     func setDelegates() {
         messageTableView.delegate = self
-        messageTableView.dataSource = self
-        messageTableView.register(UITableViewCell.self, forCellReuseIdentifier: "MessageCell")
+          messageTableView.dataSource = self
+          messageTableView.register(MessageCell.self, forCellReuseIdentifier: "MessageCell")
+    }
+    
+    //MARK: - Action Func
+    
+    private func setupNavigationBar() {
+        let rightButton = UIBarButtonItem(
+            title: "Выйти",
+            style: .plain,
+            target: self,
+            action: #selector(rightBarButtonTapped)
+        )
+        rightButton.tintColor = .white
+        navigationItem.rightBarButtonItem = rightButton
+        navigationItem.hidesBackButton = true
+    }
+    
+    @objc func rightBarButtonTapped() {
+        let firebaseAuth = Auth.auth()
+        do {
+          try firebaseAuth.signOut()
+          navigationController?.popToRootViewController(animated: true)
+        } catch let signOutError as NSError {
+          print("Error signing out: %@", signOutError)
+        }
+    }
+    
+    @objc func sendButtonTapped() {
+        if let messageBody = messageTextField.text, let messageSender = Auth.auth().currentUser?.email {
+            db.collection(<#T##collectionPath: String##String#>)
+        }
     }
     
     //MARK: - Lifecycle
@@ -52,6 +95,7 @@ class ChatViewController : UIViewController {
         setupViews()
         setConstraints()
         setDelegates()
+        setupNavigationBar()
     }
     
     private func setupViews() {
@@ -95,14 +139,12 @@ class ChatViewController : UIViewController {
 extension ChatViewController : UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return message.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath)
-        cell.textLabel?.text = "ogo way"
-        cell.textLabel?.numberOfLines = 0
-        cell.backgroundColor = .clear
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as! MessageCell
+        cell.messageLabel.text = message[indexPath.item].body
         return cell
     }
 }
