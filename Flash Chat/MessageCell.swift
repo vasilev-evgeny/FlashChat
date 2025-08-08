@@ -44,6 +44,7 @@ class MessageCell: UITableViewCell {
     override func layoutSubviews() {
             super.layoutSubviews()
             messageBubble.layer.cornerRadius = messageBubble.bounds.height / 7
+            self.isUserInteractionEnabled = false
         }
     
     

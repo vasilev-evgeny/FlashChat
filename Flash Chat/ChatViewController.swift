@@ -80,6 +80,7 @@ class ChatViewController : UIViewController {
     
     @objc func sendButtonTapped() {
         if let messageBody = messageTextField.text, let messageSender = Auth.auth().currentUser?.email {
+            messageTextField.text = ""
             db.collection(K.FStore.collectionName).addDocument(data: [K.FStore.senderField : messageSender,
                                                                       K.FStore.bodyField : messageBody,
                                                                       K.FStore.dateField : Date().timeIntervalSince1970
